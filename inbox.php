@@ -19,10 +19,10 @@
       echo "<script>window.location.href = \"login.php\";</script>";
     }
     //Verbindung zu Datenbank aufbauen
-    $servername = "mysql.hostinger.com";
-    $database = "u808613999_net";
-    $username = "u808613999_net";
-    $password = "Albert31";
+    $servername = "Server";
+    $database = "Databasename";
+    $username = "Username";
+    $password = "Password";
     // Create connection
     $con = mysqli_connect($servername, $username, $password, $database);
     // Check connection
