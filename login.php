@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+r<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -49,10 +49,10 @@
                         <br>
                         <center><button class=\"button is-block is-info is-large is-loading\"></button></center>";
                   /*Verbindung zur 1.Datenbank herstellen*/
-                	$servername = "mysql.hostinger.com";
-                	$database = "u808613999_net";
-                	$username = "u808613999_net";
-                	$password = "Albert31";
+                	$servername = "Server";
+                	$database = "Databasename";
+                	$username = "Username";
+                	$password = "Password";
                   // Create connection
                   $con = mysqli_connect($servername, $username, $password, $database);
                   // Check connection
