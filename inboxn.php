@@ -22,10 +22,10 @@
       echo "<script>window.location.href = \"login.php\";</script>";
     }
     //Verbindung zu Datenbank aufbauen
-    $servername = "mysql.hostinger.com";
-    $database = "u808613999_net";
-    $username = "u808613999_net";
-    $password = "Albert31";
+    $servername = "Server";
+    $database = "Database";
+    $username = "User";
+    $password = "Password";
     // Create connection
     $con = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -33,8 +33,6 @@
       die("Connection failed: " . mysqli_connect_error());
     }
     $ben = $_SESSION["altrnet"];
-    $res = mysqli_query($con, "SELECT ". $ben .".title FROM ". $ben ." WHERE * LIMIT 0, 10");
-
   ?>
   <div class="navbar is-info">
     <div class="container">
@@ -69,7 +67,7 @@
     </div>
   </div>
   <div class="columns">
-    <aside class="column is-2 aside hero is-fullheight">
+    <aside class="column is-2 aside hero ">
       <div>
         <div class="compose has-text-centered">
           <a class="button is-danger is-block is-bold">
@@ -80,11 +78,10 @@
           <a href="#" class="item active"><span class="icon"><i class="fa fa-inbox"></i></span><span class="name">Inbox</span></a>
           <a href="#" class="item"><span class="icon"><i class="fa fa-star"></i></span><span class="name">Starred</span></a>
           <a href="#" class="item"><span class="icon"><i class="fa fa-envelope-o"></i></span><span class="name">Sent Mail</span></a>
-          <a href="#" class="item"><span class="icon"><i class="fa fa-folder-o"></i></span><span class="name">Folders</span></a>
         </div>
       </div>
     </aside>
-    <div class="column is-5 is-fullheight">
+    <div class="column is-5 aside is-fullheight">
       <br>
       <div class="container">
         <div class="action-buttons">
@@ -99,6 +96,40 @@
             <a class="button is-link"><i class="fa fa-chevron-left"></i></a>
             <a class="button is-link"><i class="fa fa-chevron-right"></i></a>
           </div>
+          <br><br>
+        </div>
+      </div>
+      <!--Nachrichten-->
+      <?php
+        $res = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." LIMIT 0, 10");
+        if(mysqli_num_rows($res) == 0){
+          echo "<div class=\"box\">
+                  <div class=\"content\">
+                    <p>
+                      <strong>Sie haben leider keine Nachrichten</strong>
+                    </p>
+                  </div>
+                </div>";
+        }
+        else {
+          while ($dsatz = mysqli_fetch_assoc($res)) {
+            echo "<div class=\"box\">
+                    <div class=\"content\">
+                      <p>
+                        <a>". $dsatz["title"] ."</a>
+                        <br><strong>From:</strong>". $dsatz["sender"] ." <strong>Date:</strong>". $dsatz["date"] ."
+                      </p>
+                    </div>
+                  </div>";
+          }
+        }
+      ?>
+      <div class="box">
+        <div class="content">
+          <p>
+            <a>This will be the title with link to message</a>
+            <br><strong>From:</strong>Mister X <strong>Date:</strong>31.12.2000
+          </p>
         </div>
       </div>
     </div>
@@ -111,3 +142,4 @@
    ?>
 </body>
 </html>
+
