@@ -28,7 +28,7 @@ r<!DOCTYPE html>
               session_start();
               //Überprüfen ob schon angemeldet
               if(isset($_SESSION["altrnet"])){
-                echo "<script>window.location.href = \"inbox.php\";</script>";
+                echo "<script>window.location.href = \"inboxn.php\";</script>";
               }
               $p = $_POST["password"];
               $e = $_POST["email"];
@@ -76,7 +76,7 @@ r<!DOCTYPE html>
                   		$ben = $dsatz[ben];
                     }
                     $_SESSION["altrnet"] = $ben;
-                    echo "<script>window.location.href = \"inbox.php\";</script>";
+                    echo "<script>window.location.href = \"inboxn.php\";</script>";
                   }
                   else{
                     echo "<script>window.location.href = \"login.php?wrongpass=". $e ."\";</script>";
