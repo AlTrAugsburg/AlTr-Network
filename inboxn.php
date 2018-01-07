@@ -22,10 +22,10 @@
       echo "<script>window.location.href = \"login.php\";</script>";
     }
     //Verbindung zu Datenbank aufbauen
-    $servername = "Server";
-    $database = "Database";
-    $username = "User";
-    $password = "Password";
+    $servername = "server";
+    $database = "database";
+    $username = "user";
+    $password = "password";
     // Create connection
     $con = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -33,6 +33,34 @@
       die("Connection failed: " . mysqli_connect_error());
     }
     $ben = $_SESSION["altrnet"];
+    //Überprüfen ob Nachricht gesendet werden soll
+    if(isset($_GET["send"])){
+      $messagesend = $_POST["messagew"];
+      $receveiversend = $_POST["receiverw"];
+      $titlesend = $_POST["titlew"];
+      $res = mysqli_query($con, "SELECT login.ben FROM login WHERE login.ben='". $receveiversend ."'");
+      $num = mysqli_num_rows($res);
+      if($num > 1) exit ("<script>window.location.href = \"inboxn.php?receivererror\";</script>");
+      if($num == 0) exit ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."\";</script>");
+      $datesend = date("d").".".date("m").".".date("Y");
+      //Nächste ID herausfinden
+      $res5 = mysqli_query($con, "SELECT ". $receveiversend .".ID FROM ". $receveiversend ." WHERE ". $receveiversend .".ID = (SELECT MAX(". $receveiversend .".ID) FROM ". $receveiversend .")");
+      $num = mysqli_num_rows($res5);
+      if($num == 1){
+        while ($dsatz = mysqli_fetch_assoc($res5)) {
+          $idsend = intval($dsatz["ID"])+1;
+        }
+      }
+      else{
+        $idsend = 1;
+      }
+      mysqli_query($con, "INSERT INTO ". $receveiversend ." (`ID`, `title`, `sender`, `text`, `date`) VALUES ('". $idsend ."', '". $titlesend ."', '". $ben ."', '". $messagesend ."', '". $datesend ."');");
+      echo "<script type=\"text/javascript\">
+              alert(\"Nachricht erfolgreich versendet.\");
+              window.location = \"http://altr.hol.es/inboxn.php\";
+            </script>
+              ";
+    }
   ?>
   <div class="navbar is-info">
     <div class="container">
@@ -42,12 +70,12 @@
         </a>
       </div>
       <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable">
+        <div class="navbar-item has-dropdown is-hoverable is-info">
           <a class="navbar-link">
             Account
           </a>
 
-          <div class="navbar-dropdown is-white">
+          <div class="navbar-dropdown is-info">
             <a class="navbar-item">
               Dashboard
             </a>
@@ -70,7 +98,7 @@
     <aside class="column is-2 aside hero ">
       <div>
         <div class="compose has-text-centered">
-          <a class="button is-danger is-block is-bold">
+          <a class="button is-danger is-block is-bold" onclick="return writeMessage()">
             <span class="compose">Write</span>
           </a>
         </div>
@@ -89,19 +117,170 @@
           <div class="control is-grouped pg">
             <div class="title">
               <?php
-                $res = mysqli_query($con, "SELECT  login.pass FROM login WHERE  login.email= '". $e."'");
+                $res = mysqli_query($con, "SELECT * FROM Albert");
+                $num = mysqli_num_rows($res);
+                $seiten=1;
+                while ($num > 10){
+                  $seiten=$seiten+1;
+                  $num=$num-10;
+                }
+                if(isset($_GET["site"])){
+                  $seite = intval($_GET["site"]);
+                }
+                else {
+                  $seite = 1;
+                }
+                echo $seite." von ". $seiten;
                ?>
-               Seitenzahl
             </div>
-            <a class="button is-link"><i class="fa fa-chevron-left"></i></a>
-            <a class="button is-link"><i class="fa fa-chevron-right"></i></a>
+            <?php
+              if($seite>1){
+                $seitez = $seite-1;
+                echo "<a class=\"button is-link\" href=\"?site=". $seitez ."\"><i class=\"fa fa-chevron-left\"></i></a>";
+              }
+              else {
+                echo "<a class=\"button is-link\"><i class=\"fa fa-chevron-left\"></i></a>";
+              }
+              if($seite<$seiten){
+                $seitew = $seite+1;
+                echo "<a class=\"button is-link\" href =\"?site=". $seitew ."\"><i class=\"fa fa-chevron-right\"></i></a>";
+              }
+              else {
+                echo "<a class=\"button is-link\"><i class=\"fa fa-chevron-right\"></i></a>";
+              }
+            ?>
+          </div>
+          <div class="control is-grouped">
+            <a class="button is-medium is-white" href=""><i class="fa fa-refresh"></i></a>
           </div>
           <br><br>
         </div>
       </div>
       <!--Nachrichten-->
       <?php
-        $res = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." LIMIT 0, 10");
+        $max = $seite*10;
+        $min = $max-10;
+
+        //Variabeln für Javascript mit Platzhaltern
+        $sender = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $title = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $datum = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $text = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+        $res = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID ASC LIMIT ". $min .", ". $max);
+        if(mysqli_num_rows($res) != 0){
+          $i = 0;
+          while ($dsatz = mysqli_fetch_assoc($res)) {
+            $sender[$i] = $dsatz["sender"];
+            $title[$i] = $dsatz["title"];
+            $datum[$i] = $dsatz["date"];
+            $text[$i] = $dsatz["text"];
+            $i = $i+1;
+          }
+        }
+
+        //JavaScript für später; nachricht ist die Nummer der Nachricht wobei die erste angezeigte Nachricht = 1 ist und so weiter bis 10
+        //BEACHTE bei Arrays: STARTEn BEI 0
+        echo "
+          <script type=\"text/javascript\">
+            function openMessage(nachricht){
+              if(parseInt(nachricht) < 11 && parseInt(nachricht) > 0){
+                switch(parseInt(nachricht)){
+                  case 1:
+                  document.getElementById('titel').innerHTML = \"". $title[0] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[0] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[0] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[0] ."\";
+                  break;
+                  case 2:
+                  document.getElementById('titel').innerHTML = \"". $title[1] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[1] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[1] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[1] ."\";
+                  break;
+                  case 3:
+                  document.getElementById('titel').innerHTML = \"". $title[2] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[2] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[2] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[2] ."\";
+                  break;
+                  case 4:
+                  document.getElementById('titel').innerHTML = \"". $title[3] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[3] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[3] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[3] ."\";
+                  break;
+                  case 5:
+                  document.getElementById('titel').innerHTML = \"". $title[4] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[4] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[4] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[4] ."\";
+                  break;
+                  case 6:
+                  document.getElementById('titel').innerHTML = \"". $title[5] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[5] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[5] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[5] ."\";
+                  break;
+                  case 7:
+                  document.getElementById('titel').innerHTML = \"". $title[6] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[6] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[6] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[6] ."\";
+                  break;
+                  case 8:
+                  document.getElementById('titel').innerHTML = \"". $title[7] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[7] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[7] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[7] ."\";
+                  break;
+                  case 9:
+                  document.getElementById('titel').innerHTML = \"". $title[8] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[8] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[8] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[8] ."\";
+                  break;
+                  case 10:
+                  document.getElementById('titel').innerHTML = \"". $title[9] ."\";
+                  document.getElementById('sender').innerHTML = \"". $sender[9] ."\";
+                  document.getElementById('date').innerHTML = \"". $datum[9] ."\";
+                  document.getElementById('text').innerHTML = \"". $text[9] ."\";
+                  break;
+                }
+                document.getElementById('writebox').style.display = \"none\";
+                document.getElementById('box').style.display = \"inline\";
+                return true;
+              }
+              else{
+                return false;
+              }
+            }
+            function writeMessage(){
+              document.getElementById('box').style.display = \"none\";
+              document.getElementById('writebox').style.display = \"inline\";
+              return true;
+            }
+            function checkInput(){
+              if (document.forms[0].receiver.value==\"\" || document.forms[0].messagew.value==\"\" || document.forms[0].titlew.value==\"\"){
+                if (document.forms[0].receiver.value==\"\"){
+                  document.getElementById('receiver').className = \"input is-danger\";
+                }
+                if (document.forms[0].messagew.value==\"\"){
+                  document.getElementById('messagew').className = \"textarea is-danger\";
+                }
+                if (document.forms[0].titlew.value==\"\"){
+                  document.getElementById('titlew').className = \"input is-danger\";
+                }
+                return false;
+              }
+              else{
+                return true;
+              }
+            }
+          </script>
+
+        ";
+
+        $res = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
         if(mysqli_num_rows($res) == 0){
           echo "<div class=\"box\">
                   <div class=\"content\">
@@ -112,29 +291,42 @@
                 </div>";
         }
         else {
+          $i = 1;
           while ($dsatz = mysqli_fetch_assoc($res)) {
             echo "<div class=\"box\">
                     <div class=\"content\">
                       <p>
-                        <a>". $dsatz["title"] ."</a>
+                        <a onclick=\"return openMessage('". $i ."');\">". $dsatz["title"] ."</a>
                         <br><strong>From:</strong>". $dsatz["sender"] ." <strong>Date:</strong>". $dsatz["date"] ."
                       </p>
                     </div>
                   </div>";
+            $i = $i+1;
           }
         }
       ?>
-      <div class="box">
-        <div class="content">
-          <p>
-            <a>This will be the title with link to message</a>
-            <br><strong>From:</strong>Mister X <strong>Date:</strong>31.12.2000
-          </p>
-        </div>
-      </div>
     </div>
     <div class="column is-5 hero is-fullheight is-light">
-      lalala
+      <div style="display:none" id="box"><br><!--display:none macht das Element unsichtbar(Magie). Mit display:inline ist es wieder sichtbar-->
+        <div class="box">
+          <div class="content">
+              <h3 id="titel"></h3>
+              <strong>From:</strong><i id="sender"></i>  <strong>Date:</strong><i id="date"></i>
+              <br><div id="text"></div>
+          </div>
+        </div>
+      </div>
+      <div id="writebox" style="display:none"><br>
+        <div class="box">
+          <form action="?send" method="post">
+              <div class="content"><h3>Message</h3></div>
+              <strong>Receiver:</strong><input class="input" type="text" placeholder="Receiver of message" name="receiverw" id="receiverw">
+              <br><strong>Title:</strong><input class="input" type="text" placeholder="Message title" name="titlew" id="titlew">
+              <br><strong>Text:</strong><textarea class="textarea" type="text" placeholder="Your message" rows="5" name="messagew" id="messagew"></textarea>
+              <br><button class="button is-block is-info" type = "submit" onclick="return checkInput()">Submit</button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
   <?php
@@ -142,4 +334,3 @@
    ?>
 </body>
 </html>
-
