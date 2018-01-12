@@ -44,8 +44,8 @@
       if($num == 0) exit ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."\";</script>");
       $datesend = date("d").".".date("m").".".date("Y");
       //Nächste ID herausfinden
-      $res5 = mysqli_query($con, "SELECT ". $receveiversend .".ID FROM ". $receveiversend ." WHERE ". $receveiversend .".ID = (SELECT MAX(". $receveiversend .".ID) FROM ". $receveiversend .")");
-      $num = mysqli_num_rows($res5);
+      $res2 = mysqli_query($con, "SELECT ". $receveiversend .".ID FROM ". $receveiversend ." WHERE ". $receveiversend .".ID = (SELECT MAX(". $receveiversend .".ID) FROM ". $receveiversend .")");
+      $num = mysqli_num_rows($res2);
       if($num == 1){
         while ($dsatz = mysqli_fetch_assoc($res5)) {
           $idsend = intval($dsatz["ID"])+1;
@@ -117,8 +117,8 @@
           <div class="control is-grouped pg">
             <div class="title">
               <?php
-                $res = mysqli_query($con, "SELECT * FROM Albert");
-                $num = mysqli_num_rows($res);
+                $res3 = mysqli_query($con, "SELECT * FROM Albert");
+                $num = mysqli_num_rows($res3);
                 $seiten=1;
                 while ($num > 10){
                   $seiten=$seiten+1;
@@ -166,10 +166,10 @@
         $title = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $datum = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $text = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-        $res = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID ASC LIMIT ". $min .", ". $max);
-        if(mysqli_num_rows($res) != 0){
+        $res4 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID ASC LIMIT ". $min .", ". $max);
+        if(!empty($res4)){
           $i = 0;
-          while ($dsatz = mysqli_fetch_assoc($res)) {
+          while ($dsatz = mysqli_fetch_assoc($res4)) {
             $sender[$i] = $dsatz["sender"];
             $title[$i] = $dsatz["title"];
             $datum[$i] = $dsatz["date"];
@@ -280,8 +280,8 @@
 
         ";
 
-        $res = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
-        if(mysqli_num_rows($res) == 0){
+        $res5 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
+        if(empty($res5)){
           echo "<div class=\"box\">
                   <div class=\"content\">
                     <p>
@@ -292,7 +292,7 @@
         }
         else {
           $i = 1;
-          while ($dsatz = mysqli_fetch_assoc($res)) {
+          while ($dsatz = mysqli_fetch_assoc($res5)) {
             echo "<div class=\"box\">
                     <div class=\"content\">
                       <p>
