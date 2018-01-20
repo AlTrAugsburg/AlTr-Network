@@ -35,19 +35,23 @@
     $ben = $_SESSION["altrnet"];
     //Überprüfen ob Nachricht gesendet werden soll
     if(isset($_GET["send"])){
-      $messagesend = $_POST["messagew"];
+      $messagesend = rawurlencode($_POST["messagew"]);
       $receveiversend = $_POST["receiverw"];
       $titlesend = $_POST["titlew"];
       $res = mysqli_query($con, "SELECT login.ben FROM login WHERE login.ben='". $receveiversend ."'");
+      if(empty($res)){ die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");}
+      while ($dsatz = mysqli_fetch_assoc($res)) {
+        echo $dsatz;
+      }
       $num = mysqli_num_rows($res);
-      if($num > 1) exit ("<script>window.location.href = \"inboxn.php?receivererror\";</script>");
-      if($num == 0) exit ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."\";</script>");
+      if($num > 1) die ("<script>window.location.href = \"inboxn.php?receivererror&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
+
       $datesend = date("d").".".date("m").".".date("Y");
       //Nächste ID herausfinden
       $res2 = mysqli_query($con, "SELECT ". $receveiversend .".ID FROM ". $receveiversend ." WHERE ". $receveiversend .".ID = (SELECT MAX(". $receveiversend .".ID) FROM ". $receveiversend .")");
       $num = mysqli_num_rows($res2);
       if($num == 1){
-        while ($dsatz = mysqli_fetch_assoc($res5)) {
+        while ($dsatz = mysqli_fetch_assoc($res2)) {
           $idsend = intval($dsatz["ID"])+1;
         }
       }
@@ -58,6 +62,13 @@
       echo "<script type=\"text/javascript\">
               alert(\"Nachricht erfolgreich versendet.\");
               window.location = \"http://altr.hol.es/inboxn.php\";
+            </script>
+              ";
+    }
+    if(isset($_GET["receivernexsist"])||isset($_GET["receivererror"])){
+      echo "<script type=\"text/javascript\">
+              alert(\"Receiver does not exsist or there is an error. Please try again.\");
+              window.location = \"http://altr.hol.es/inboxn.php?message=". $_GET["message"] ."&receiver=". $_GET["receiver"] ."&title=". $_GET["title"] ."\";
             </script>
               ";
     }
@@ -131,6 +142,7 @@
                   $seite = 1;
                 }
                 echo $seite." von ". $seiten;
+                mysqli_free_result($res3);
                ?>
             </div>
             <?php
@@ -166,8 +178,10 @@
         $title = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $datum = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $text = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-        $res4 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID ASC LIMIT ". $min .", ". $max);
+        $res4 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
+
         if(!empty($res4)){
+          $num = mysqli_num_rows($res4);
           $i = 0;
           while ($dsatz = mysqli_fetch_assoc($res4)) {
             $sender[$i] = $dsatz["sender"];
@@ -189,61 +203,61 @@
                   document.getElementById('titel').innerHTML = \"". $title[0] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[0] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[0] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[0] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[0] ."\");
                   break;
                   case 2:
                   document.getElementById('titel').innerHTML = \"". $title[1] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[1] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[1] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[1] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[1] ."\");
                   break;
                   case 3:
                   document.getElementById('titel').innerHTML = \"". $title[2] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[2] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[2] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[2] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[2] ."\");
                   break;
                   case 4:
                   document.getElementById('titel').innerHTML = \"". $title[3] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[3] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[3] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[3] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[3] ."\");
                   break;
                   case 5:
                   document.getElementById('titel').innerHTML = \"". $title[4] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[4] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[4] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[4] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[4] ."\");
                   break;
                   case 6:
                   document.getElementById('titel').innerHTML = \"". $title[5] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[5] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[5] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[5] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[5] ."\");
                   break;
                   case 7:
                   document.getElementById('titel').innerHTML = \"". $title[6] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[6] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[6] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[6] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[6] ."\");
                   break;
                   case 8:
                   document.getElementById('titel').innerHTML = \"". $title[7] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[7] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[7] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[7] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[7] ."\");
                   break;
                   case 9:
                   document.getElementById('titel').innerHTML = \"". $title[8] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[8] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[8] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[8] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[8] ."\");
                   break;
                   case 10:
                   document.getElementById('titel').innerHTML = \"". $title[9] ."\";
                   document.getElementById('sender').innerHTML = \"". $sender[9] ."\";
                   document.getElementById('date').innerHTML = \"". $datum[9] ."\";
-                  document.getElementById('text').innerHTML = \"". $text[9] ."\";
+                  document.getElementById('text').innerHTML = decodeURIComponent(\"". $text[9] ."\");
                   break;
                 }
                 document.getElementById('writebox').style.display = \"none\";
@@ -260,9 +274,9 @@
               return true;
             }
             function checkInput(){
-              if (document.forms[0].receiver.value==\"\" || document.forms[0].messagew.value==\"\" || document.forms[0].titlew.value==\"\"){
-                if (document.forms[0].receiver.value==\"\"){
-                  document.getElementById('receiver').className = \"input is-danger\";
+              if (document.forms[0].receiverw.value==\"\" || document.forms[0].messagew.value==\"\" || document.forms[0].titlew.value==\"\"){
+                if (document.forms[0].receiverw.value==\"\"){
+                  document.getElementById('receiverw').className = \"input is-danger\";
                 }
                 if (document.forms[0].messagew.value==\"\"){
                   document.getElementById('messagew').className = \"textarea is-danger\";
@@ -316,17 +330,34 @@
           </div>
         </div>
       </div>
-      <div id="writebox" style="display:none"><br>
-        <div class="box">
-          <form action="?send" method="post">
-              <div class="content"><h3>Message</h3></div>
-              <strong>Receiver:</strong><input class="input" type="text" placeholder="Receiver of message" name="receiverw" id="receiverw">
-              <br><strong>Title:</strong><input class="input" type="text" placeholder="Message title" name="titlew" id="titlew">
-              <br><strong>Text:</strong><textarea class="textarea" type="text" placeholder="Your message" rows="5" name="messagew" id="messagew"></textarea>
-              <br><button class="button is-block is-info" type = "submit" onclick="return checkInput()">Submit</button>
-          </form>
-        </div>
-      </div>
+      <?php
+        if(isset($_GET["message"])&&isset($_GET["receiver"])&&isset($_GET["title"])){
+          echo"<div id=\"writebox\" style=\"display:inline\"><br>
+                <div class=\"box\">
+                  <form action=\"?send\" method=\"post\">
+                      <div class=\"content\"><h3>Message</h3></div>
+                      <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" name=\"receiverw\" id=\"receiverw\" value=\"". $_GET["receiver"] ."\">
+                      <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\" value=\"". $_GET["title"] ."\">
+                      <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder= \"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\" value=\"". $_GET["message"] ."\"></textarea>
+                      <br><button class=\"button is-block is-info\" type = \"submit\" onclick=\"return checkInput()\">Submit</button>
+                  </form>
+                </div>
+              </div>";
+        }
+        else {
+          echo "<div id=\"writebox\" style=\"display:none\"><br>
+                  <div class=\"box\">
+                    <form action=\"?send\" method=\"post\">
+                        <div class=\"content\"><h3>Message</h3></div>
+                        <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" name=\"receiverw\" id=\"receiverw\">
+                        <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\">
+                        <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder=\"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\"></textarea>
+                        <br><button class=\"button is-block is-info\" type = \"submit\" onclick=\"return checkInput()\">Submit</button>
+                    </form>
+                  </div>
+                </div>";
+        }
+      ?>
     </div>
   </div>
   <?php
