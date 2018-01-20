@@ -336,9 +336,9 @@
                 <div class=\"box\">
                   <form action=\"?send\" method=\"post\">
                       <div class=\"content\"><h3>Message</h3></div>
-                      <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" name=\"receiverw\" id=\"receiverw\" value=\"". $_GET["receiver"] ."\">
-                      <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\" value=\"". $_GET["title"] ."\">
-                      <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder= \"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\" value=\"". $_GET["message"] ."\"></textarea>
+                      <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" name=\"receiverw\" id=\"receiverw\" value=\"". rawurldecode($_GET["receiver"]) ."\">
+                      <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\" value=\"". rawurldecode($_GET["title"]) ."\">
+                      <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder= \"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\" value=\"". rawurldecode($_GET["message"]) ."\"></textarea>
                       <br><button class=\"button is-block is-info\" type = \"submit\" onclick=\"return checkInput()\">Submit</button>
                   </form>
                 </div>
