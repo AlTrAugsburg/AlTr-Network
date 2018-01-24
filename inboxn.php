@@ -22,10 +22,10 @@
       echo "<script>window.location.href = \"login.php\";</script>";
     }
     //Verbindung zu Datenbank aufbauen
-    $servername = "server";
-    $database = "database";
-    $username = "user";
-    $password = "password";
+    $servername = "Server";
+    $database = "Database";
+    $username = "Username";
+    $password = "Pass";
     // Create connection
     $con = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -38,8 +38,10 @@
       $messagesend = rawurlencode($_POST["messagew"]);
       $receveiversend = $_POST["receiverw"];
       $titlesend = $_POST["titlew"];
-      $res = mysqli_query($con, "SELECT login.ben FROM login WHERE login.ben='". $receveiversend ."'");
-      if(empty($res)){ die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");}
+      $res = mysqli_query($con, "SELECT login.ben FROM login WHERE login.ben LIKE '%". $receveiversend ."'");
+      if(empty($res)){
+        die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
+      }
       while ($dsatz = mysqli_fetch_assoc($res)) {
         echo $dsatz;
       }
@@ -58,12 +60,22 @@
       else{
         $idsend = 1;
       }
-      mysqli_query($con, "INSERT INTO ". $receveiversend ." (`ID`, `title`, `sender`, `text`, `date`) VALUES ('". $idsend ."', '". $titlesend ."', '". $ben ."', '". $messagesend ."', '". $datesend ."');");
-      echo "<script type=\"text/javascript\">
-              alert(\"Nachricht erfolgreich versendet.\");
-              window.location = \"http://altr.hol.es/inboxn.php\";
-            </script>
-              ";
+      if(mysqli_query($con, "INSERT INTO ". $receveiversend ." (`ID`, `title`, `sender`, `text`, `date`) VALUES ('". $idsend ."', '". $titlesend ."', '". $ben ."', '". $messagesend ."', '". $datesend ."');")){
+        //Erfolgreiche Eintragung :))
+        echo "<script type=\"text/javascript\">
+                alert(\"Message send successfully.\");
+                window.location = \"http://altr.hol.es/inboxn.php\";
+              </script>
+                ";
+      }
+      else{
+        //Fehler bei Eintragung :(
+        echo "<script type=\"text/javascript\">
+                alert(\"Message not send. Error in signing. Please try again or contact support.\");
+                window.location = \"http://altr.hol.es/inboxn.php\";
+              </script>
+                ";
+      }
     }
     if(isset($_GET["receivernexsist"])||isset($_GET["receivererror"])){
       echo "<script type=\"text/javascript\">
@@ -129,7 +141,15 @@
             <div class="title">
               <?php
                 $res3 = mysqli_query($con, "SELECT * FROM Albert");
-                $num = mysqli_num_rows($res3);
+                //Schauen ob Ergebnis nicht leer
+                if(empty($res3)){
+                  //Leer, also Warnung umgehen >:)
+                  $num = 0;
+                }
+                else{
+                  //Passt, da nicht leer
+                  $num = mysqli_num_rows($res3);
+                }
                 $seiten=1;
                 while ($num > 10){
                   $seiten=$seiten+1;
@@ -331,6 +351,7 @@
         </div>
       </div>
       <?php
+        //Schauen ob vorher geschriebenes mitgegeben wurde
         if(isset($_GET["message"])&&isset($_GET["receiver"])&&isset($_GET["title"])){
           echo"<div id=\"writebox\" style=\"display:inline\"><br>
                 <div class=\"box\">
