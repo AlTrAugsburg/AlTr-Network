@@ -60,7 +60,7 @@ r<!DOCTYPE html>
                 		die("Connection failed: " . mysqli_connect_error());
                 	}
                   //Überprüfen Passwort und Email
-                  $res = mysqli_query($con, "SELECT  login.pass FROM login WHERE  login.email LIKE '%". $e."'");
+                  $res = mysqli_query($con, "SELECT  login.pass FROM login WHERE BINARY login.email LIKE '%". $e."'");
                   /*Daten ausgeben*/
                 	$num = mysqli_num_rows($res);
                 	if($num > 1) exit ("<script>window.location.href = \"login.php?fdb\";</script>");
@@ -71,7 +71,7 @@ r<!DOCTYPE html>
                   }
                   //Passwort prüfen
                   if($pass == md5($p)){
-                    $res = mysqli_query($con, "SELECT  login.ben FROM login WHERE  login.email LIKE '%". $e."'");
+                    $res = mysqli_query($con, "SELECT  login.ben FROM login WHERE BINARY login.email LIKE '%". $e."'");
                     while ($dsatz = mysqli_fetch_assoc($res)){
                   		$ben = $dsatz[ben];
                     }
