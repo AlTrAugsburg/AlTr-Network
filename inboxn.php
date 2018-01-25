@@ -25,7 +25,7 @@
     $servername = "Server";
     $database = "Database";
     $username = "Username";
-    $password = "Pass";
+    $password = "Password";
     // Create connection
     $con = mysqli_connect($servername, $username, $password, $database);
     // Check connection
@@ -38,7 +38,7 @@
       $messagesend = rawurlencode($_POST["messagew"]);
       $receveiversend = $_POST["receiverw"];
       $titlesend = $_POST["titlew"];
-      $res = mysqli_query($con, "SELECT login.ben FROM login WHERE login.ben LIKE '%". $receveiversend ."'");
+      $res = mysqli_query($con, "SELECT login.ben FROM login WHERE BINARY login.ben LIKE '%". $receveiversend ."'");
       if(empty($res)){
         die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
       }
@@ -313,9 +313,9 @@
           </script>
 
         ";
-
+        //Schauen ob es Nachrichten gibt
         $res5 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
-        if(empty($res5)){
+        if(mysqli_num_rows($res5)==0){
           echo "<div class=\"box\">
                   <div class=\"content\">
                     <p>
