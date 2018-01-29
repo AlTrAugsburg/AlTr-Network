@@ -140,7 +140,7 @@
           <div class="control is-grouped pg">
             <div class="title">
               <?php
-                $res3 = mysqli_query($con, "SELECT * FROM Albert");
+                $res3 = mysqli_query($con, "SELECT * FROM ". $ben);
                 //Schauen ob Ergebnis nicht leer
                 if(empty($res3)){
                   //Leer, also Warnung umgehen >:)
