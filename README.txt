@@ -9,12 +9,12 @@ A PHP and JavaScript project by AlTrAugsburg.
 Features:
   -Writing
   -Login
+  -Sign Up(with activation link send to given E-Mailaddress)(NEW)
   
 Future features:
-  -Sign Up
   -Delete messages
   -Mark spam
-  -Forgotten password
+  -Forgot password
   -Delete account
   -Installation assistant
   -Control panel
