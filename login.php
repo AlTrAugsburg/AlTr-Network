@@ -1,4 +1,4 @@
-r<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -50,8 +50,8 @@ r<!DOCTYPE html>
                         <center><button class=\"button is-block is-info is-large is-loading\"></button></center>";
                   /*Verbindung zur 1.Datenbank herstellen*/
                 	$servername = "Server";
-                	$database = "Databasename";
-                	$username = "Username";
+                	$database = "Database";
+                	$username = "User";
                 	$password = "Password";
                   // Create connection
                   $con = mysqli_connect($servername, $username, $password, $database);
@@ -59,11 +59,32 @@ r<!DOCTYPE html>
                   if (!$con) {
                 		die("Connection failed: " . mysqli_connect_error());
                 	}
-                  //Überprüfen Passwort und Email
-                  $res = mysqli_query($con, "SELECT  login.pass FROM login WHERE BINARY login.email LIKE '%". $e."'");
+                  //Überprüfen ob Account aktiv
+                  $res = mysqli_query($con, "SELECT  login.checked FROM login WHERE BINARY  login.email LIKE '%". $e."'");
+                  $num = mysqli_num_rows($res);
+                  if($num==0){
+                    exit("<script>window.location.href = \"login.php?activate\";</script>");
+                  }
+                  if($num > 1){
+                    exit("<script>window.location.href = \"login.php?fdb=". $e ."\";</script>");
+                  }
+                  //Daten übertragen
+                  while ($dsatz = mysqli_fetch_assoc($res)){
+                		$check = $dsatz["checked"];
+                  }
+                  if(intval($check)==0){
+                    exit("<script>window.location.href = \"login.php?ncheck=". $e ."\";</script>");
+                  }
+                  if(intval($check) != 1){
+                    exit("<script>window.location.href = \"login.php?fdb=". $e ."\";</script>");
+                  }
+                  //Account wurde aktiviert, falls durchgekommen
+                  unset($res);
+                  //Überprüfen Passwort
+                  $res = mysqli_query($con, "SELECT  login.pass FROM login WHERE BINARY  login.email LIKE '%". $e."'");
                   /*Daten ausgeben*/
                 	$num = mysqli_num_rows($res);
-                	if($num > 1) exit ("<script>window.location.href = \"login.php?fdb\";</script>");
+                	if($num > 1) exit ("<script>window.location.href = \"login.php?fdb=". $e ."\";</script>");
                   if($num == 0) exit ("<script>window.location.href = \"login.php?nexsist\";</script>");
                   /*Datnesätze aus Abfrage bearbeiten*/
                 	while ($dsatz = mysqli_fetch_assoc($res)){
@@ -71,7 +92,7 @@ r<!DOCTYPE html>
                   }
                   //Passwort prüfen
                   if($pass == md5($p)){
-                    $res = mysqli_query($con, "SELECT  login.ben FROM login WHERE BINARY login.email LIKE '%". $e."'");
+                    $res = mysqli_query($con, "SELECT  login.ben FROM login WHERE BINARY  login.email LIKE '%". $e."'");
                     while ($dsatz = mysqli_fetch_assoc($res)){
                   		$ben = $dsatz[ben];
                     }
@@ -95,13 +116,13 @@ r<!DOCTYPE html>
                         </div>
                         <div class=\"field\">
                         <div class=\"control\">
-                          <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\">
+                          <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\" required>
                         </div>
                       </div>
 
                       <div class=\"field\">
                         <div class=\"control\">
-                          <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\">
+                          <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\" required>
                         </div>
                       </div>
                       <br>
@@ -115,13 +136,13 @@ r<!DOCTYPE html>
                           </div>
                           <div class=\"field\">
                           <div class=\"control\">
-                            <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\">
+                            <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" value=\"". $_GET["fdb"] ."\" autofocus=\"\" name=\"email\" required>
                           </div>
                         </div>
 
                         <div class=\"field\">
                           <div class=\"control\">
-                            <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\">
+                            <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\" required>
                           </div>
                         </div>
                         <br>
@@ -131,17 +152,17 @@ r<!DOCTYPE html>
                     //Account exestiert nicht
                     if(isset($_GET["nexsist"])){
                       echo "<div class=\"notification is-danger\">
-                                <center>This account doesn't exsist. Please click <a href=\"create.php\">here</a> to create an account.</center>
+                                <center>This account doesn't exsist. Please click <a href=\"signup.php\">here</a> to create an account.</center>
                               </div>
                               <div class=\"field\">
                               <div class=\"control\">
-                                <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\">
+                                <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\" required>
                               </div>
                             </div>
 
                             <div class=\"field\">
                               <div class=\"control\">
-                                <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\">
+                                <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\" required>
                               </div>
                             </div>
                             <br>
@@ -154,32 +175,52 @@ r<!DOCTYPE html>
                                 </div>
                                 <div class=\"field\">
                                 <div class=\"control\">
-                                  <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\" value=\"".$_GET["wrongpass"]."\">
+                                  <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\" value=\"".$_GET["wrongpass"]."\" required>
                                 </div>
                               </div>
 
                               <div class=\"field\">
                                 <div class=\"control\">
-                                  <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\">
+                                  <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\" required>
                                 </div>
                               </div>
                               <br>
                               <center><button class=\"button is-block is-info is-large\" type = \"submit\">Login</button></center>";
                       }
                       else{
-                      echo"<div class=\"field\">
-                            <div class=\"control\">
-                              <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\">
-                            </div>
-                          </div>
+                          if(isset($_GET["ncheck"])){
+                            echo "<div class=\"notification is-danger\">
+                                      <center>Please activate your account first.</center>
+                                    </div>
+                                    <div class=\"field\">
+                                    <div class=\"control\">
+                                      <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\" value=\"".$_GET["ncheck"]."\" required>
+                                    </div>
+                                  </div>
 
-                          <div class=\"field\">
-                            <div class=\"control\">
-                              <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\">
+                                  <div class=\"field\">
+                                    <div class=\"control\">
+                                      <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\" required>
+                                    </div>
+                                  </div>
+                                  <br>
+                                  <center><button class=\"button is-block is-info is-large\" type = \"submit\">Login</button></center>";
+                          }
+                          else{
+                            echo"<div class=\"field\">
+                              <div class=\"control\">
+                                <input class=\"input is-large\" type=\"email\" placeholder=\"Your Email\" autofocus=\"\" name=\"email\" required>
+                              </div>
                             </div>
-                          </div>
-                          <br>
-                          <center><button class=\"button is-block is-info is-large\" type = \"submit\">Login</button></center>";
+
+                            <div class=\"field\">
+                              <div class=\"control\">
+                                <input class=\"input is-large\" type=\"password\" placeholder=\"Your Password\" name=\"password\" required>
+                              </div>
+                            </div>
+                            <br>
+                            <center><button class=\"button is-block is-info is-large\" type = \"submit\">Login</button></center>";
+                        }
                       }
                     }
                   }
@@ -189,7 +230,7 @@ r<!DOCTYPE html>
             </form>
           </div>
           <p class="has-text-grey">
-            <a href="../">Sign Up</a> &nbsp;·&nbsp;
+            <a href="signup.php">Sign Up</a> &nbsp;·&nbsp;
             <a href="../">Forgot Password</a> &nbsp;·&nbsp;
             <a href="../">Need Help?</a>
           </p>
