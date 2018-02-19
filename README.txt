@@ -10,11 +10,13 @@ Features:
   -Writing
   -Login
   -Sign Up(with activation link send to given E-Mailaddress)(NEW)
+  -Scrolls to opened message or writebox(easier to use on smartphone)
   
 Future features:
   -Delete messages
   -Mark spam
   -Forgot password
+  -Account panel
   -Delete account
   -Installation assistant
   -Control panel
@@ -26,4 +28,4 @@ Wanna help? Write me an E-Mail: albertalberr@gmail.com
 CSS Framework Bulma used. More infos: http://bulma.io
 Important: inbox.php is the old version of inboxn.php
 Messages can't be read, if there is an code error in one message. This bug is going to be fixed soon.
-Last changes on 09.02.2018 by AlTrAugsburg
+Last changes on 19.02.2018 by AlTrAugsburg
