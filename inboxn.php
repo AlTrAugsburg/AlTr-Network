@@ -282,6 +282,8 @@
                 }
                 document.getElementById('writebox').style.display = \"none\";
                 document.getElementById('box').style.display = \"inline\";
+                var box = document.getElementById('box');
+                box.scrollIntoView();
                 return true;
               }
               else{
@@ -291,6 +293,8 @@
             function writeMessage(){
               document.getElementById('box').style.display = \"none\";
               document.getElementById('writebox').style.display = \"inline\";
+              var box = document.getElementById('box');
+              box.scrollIntoView();
               return true;
             }
             function checkInput(){
