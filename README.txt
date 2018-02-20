@@ -11,15 +11,15 @@ Features:
   -Login
   -Sign Up(with activation link send to given E-Mailaddress)(NEW)
   -Scrolls to opened message or writebox(easier to use on smartphone)
-  
-Future features:
   -Delete messages
-  -Mark spam
+  
+Upcoming features:
   -Forgot password
   -Account panel
   -Delete account
   -Installation assistant
   -Control panel
+  -Mark spam
 
 See the demo version on http://altr.hol.es
 
