@@ -64,7 +64,7 @@
         //Erfolgreiche Eintragung :))
         echo "<script type=\"text/javascript\">
                 alert(\"Message send successfully.\");
-                window.location = \"http://altr.hol.es/inboxn.php\";
+                window.location = \"inboxn.php\";
               </script>
                 ";
       }
@@ -72,23 +72,53 @@
         //Fehler bei Eintragung :(
         echo "<script type=\"text/javascript\">
                 alert(\"Message not send. Error in signing. Please try again or contact support.\");
-                window.location = \"http://altr.hol.es/inboxn.php\";
+                window.location = \"inboxn.php\";
               </script>
                 ";
       }
     }
     if(isset($_GET["receivernexsist"])||isset($_GET["receivererror"])){
+      //Fehler anzeigen und alte Nachrichtenwerte einsetzen
       echo "<script type=\"text/javascript\">
               alert(\"Receiver does not exsist or there is an error. Please try again.\");
-              window.location = \"http://altr.hol.es/inboxn.php?message=". $_GET["message"] ."&receiver=". $_GET["receiver"] ."&title=". $_GET["title"] ."\";
+              window.location = \"inboxn.php?message=". $_GET["message"] ."&receiver=". $_GET["receiver"] ."&title=". $_GET["title"] ."\";
             </script>
               ";
+    }
+    if(isset($_GET["delete"])&&isset($_GET["site"])){
+      //delete==zu löschendes Element; site == Seite wo es ist
+      //Schauen welche ID Nachricht hat
+      $position = intval($_GET["delete"])+((intval($_GET["site"])*10)-10)-1;
+      $resID = mysqli_query($con, "SELECT ". $ben .".ID FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $position ." , 1");
+      //Schauen ob es den Eintrag gibt
+      if(empty($resID)){
+        die ("<script>window.location.href = \"inboxn.php?messagenexsist=". $position ."-". $ben ."&site=". $_GET["site"] ."\";</script>");
+      }
+      //Eintrag holen
+      while ($dsatz = mysqli_fetch_assoc($resID)) {
+        $ID = $dsatz["ID"];
+      }
+      //Nachricht löschen und schauen ob erfolgreich
+      if(mysqli_query($con, "DELETE FROM ". $ben ." WHERE ". $ben .".ID = ". $ID)){
+        //Frohe Kunde mitteilen
+        echo "<script type=\"text/javascript\">
+                alert(\"Message deleted successfully!\");
+              </script>";
+      }
+      else{
+        //Fehler mitteilen
+        echo "<script type=\"text/javascript\">
+                alert(\"Message could not be deleted. Please try again or contact the support.\");
+                window.location = \"inboxn.php?site=". $_GET["site"] ."\";
+              </script>
+                ";
+      }
     }
   ?>
   <div class="navbar is-info">
     <div class="container">
       <div class="navbar-brand">
-        <a class="navbar-item" href="inbox.php">
+        <a class="navbar-item" href="inboxn.php">
           <img src="assets/logow.png">
         </a>
       </div>
@@ -140,7 +170,7 @@
           <div class="control is-grouped pg">
             <div class="title">
               <?php
-                $res3 = mysqli_query($con, "SELECT * FROM ". $ben);
+                $res3 = mysqli_query($con, "SELECT * FROM ".$ben);
                 //Schauen ob Ergebnis nicht leer
                 if(empty($res3)){
                   //Leer, also Warnung umgehen >:)
@@ -161,8 +191,11 @@
                 else {
                   $seite = 1;
                 }
+                if($seite>$seiten){
+                  $seite = $seiten;
+                }
                 echo $seite." von ". $seiten;
-                mysqli_free_result($res3);
+                unset($res3);
                ?>
             </div>
             <?php
@@ -191,6 +224,7 @@
       <!--Nachrichten-->
       <?php
         $max = $seite*10;
+        //Startet dort mit zählen
         $min = $max-10;
 
         //Variabeln für Javascript mit Platzhaltern
@@ -198,7 +232,7 @@
         $title = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $datum = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
         $text = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
-        $res4 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
+        $res4 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date, ". $ben .".text FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", 10");
 
         if(!empty($res4)){
           $num = mysqli_num_rows($res4);
@@ -293,8 +327,8 @@
             function writeMessage(){
               document.getElementById('box').style.display = \"none\";
               document.getElementById('writebox').style.display = \"inline\";
-              var box = document.getElementById('box');
-              box.scrollIntoView();
+              var wbox = document.getElementById('writebox');
+              wbox.scrollIntoView();
               return true;
             }
             function checkInput(){
@@ -314,12 +348,20 @@
                 return true;
               }
             }
+            function Delete(){
+              if(confirm('Are you sure you want to delete the message?')){
+                  return true;
+              }
+              else{
+                  return false;
+              }
+            }
           </script>
 
         ";
         //Schauen ob es Nachrichten gibt
-        $res5 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", ". $max);
-        if(mysqli_num_rows($res5)==0){
+        $res5 = mysqli_query($con, "SELECT ". $ben .".title, ". $ben .".sender, ". $ben .".date FROM ". $ben ." ORDER BY ". $ben .".ID DESC LIMIT ". $min .", 10");
+        if(empty($res5)){
           echo "<div class=\"box\">
                   <div class=\"content\">
                     <p>
@@ -330,12 +372,18 @@
         }
         else {
           $i = 1;
+          if(isset($_GET["site"])){
+            $seite = intval($_GET["site"]);
+          }
+          else{
+            $seite = 1;
+          }
           while ($dsatz = mysqli_fetch_assoc($res5)) {
             echo "<div class=\"box\">
                     <div class=\"content\">
                       <p>
                         <a onclick=\"return openMessage('". $i ."');\">". $dsatz["title"] ."</a>
-                        <br><strong>From:</strong>". $dsatz["sender"] ." <strong>Date:</strong>". $dsatz["date"] ."
+                        <br><strong>From:</strong>". $dsatz["sender"] ." <strong>Date:</strong>". $dsatz["date"] ."  <a href=\"inboxn.php?delete=". $i ."&site=". $seite ."\" class=\"button is-white is-small\" onclick=\"return Delete('inboxn.php?delete=". $i ."&site=". $seite ."')\"><i class=\"fa fa-trash-o\"></i></a>
                       </p>
                     </div>
                   </div>";
