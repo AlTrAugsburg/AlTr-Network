@@ -62,6 +62,14 @@
           die();
         }
         else{
+          //Tabelle für Nachrichten erstellen 
+          if(!mysqli_query($con, "CREATE TABLE ". rawurldecode($_GET["account"]) ." ( ID INT (11) PRIMARY KEY, title VARCHAR(100), sender VARCHAR(12), text VARCHAR(1000), date VARCHAR(12) ); ")){
+            echo"<script type=\"text/javascript\">
+                    alert(\"Error with creating table. Please try again. If this message comes again, contact the support.\");
+                    window.location = \"http://altr.hol.es/login.php\";
+                  </script>";
+            die();
+          }
           //Endlich durch :)
           //Jetzt noch den ActivationCode löschen
           if(!mysqli_query($con, "DELETE FROM ActivationCodes WHERE ActivationCodes.username = '". $_GET["account"] ."'")){
