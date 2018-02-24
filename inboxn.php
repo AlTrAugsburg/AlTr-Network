@@ -42,6 +42,9 @@
       if(empty($res)){
         die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
       }
+      if(mysqli_num_rows($res)==0){
+        die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
+      }
       while ($dsatz = mysqli_fetch_assoc($res)) {
         echo $dsatz;
       }
@@ -371,23 +374,34 @@
                 </div>";
         }
         else {
-          $i = 1;
-          if(isset($_GET["site"])){
-            $seite = intval($_GET["site"]);
-          }
-          else{
-            $seite = 1;
-          }
-          while ($dsatz = mysqli_fetch_assoc($res5)) {
+          if(mysqli_num_rows($res5)==0){
             echo "<div class=\"box\">
                     <div class=\"content\">
                       <p>
-                        <a onclick=\"return openMessage('". $i ."');\">". $dsatz["title"] ."</a>
-                        <br><strong>From:</strong>". $dsatz["sender"] ." <strong>Date:</strong>". $dsatz["date"] ."  <a href=\"inboxn.php?delete=". $i ."&site=". $seite ."\" class=\"button is-white is-small\" onclick=\"return Delete('inboxn.php?delete=". $i ."&site=". $seite ."')\"><i class=\"fa fa-trash-o\"></i></a>
+                        <strong>Sie haben leider keine Nachrichten</strong>
                       </p>
                     </div>
                   </div>";
-            $i = $i+1;
+          }
+          else{
+            $i = 1;
+            if(isset($_GET["site"])){
+              $seite = intval($_GET["site"]);
+            }
+            else{
+              $seite = 1;
+            }
+            while ($dsatz = mysqli_fetch_assoc($res5)) {
+              echo "<div class=\"box\">
+                      <div class=\"content\">
+                        <p>
+                          <a onclick=\"return openMessage('". $i ."');\">". $dsatz["title"] ."</a>
+                          <br><strong>From:</strong>". $dsatz["sender"] ." <strong>Date:</strong>". $dsatz["date"] ."  <a href=\"inboxn.php?delete=". $i ."&site=". $seite ."\" class=\"button is-white is-small\" onclick=\"return Delete('inboxn.php?delete=". $i ."&site=". $seite ."')\"><i class=\"fa fa-trash-o\"></i></a>
+                        </p>
+                      </div>
+                    </div>";
+              $i = $i+1;
+            }
           }
         }
       ?>
