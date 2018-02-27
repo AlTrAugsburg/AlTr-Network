@@ -23,9 +23,9 @@ Upcoming features:
 
 See the demo version on http://altr.hol.es
 
-Wanna help? Write me an E-Mail: albertalberr@gmail.com
+Wanna help? Write me an E-mail: albertalberr@gmail.com
 
 CSS Framework Bulma used. More infos: http://bulma.io
 Important: inbox.php is the old version of inboxn.php
 Messages can't be read, if there is an code error in one message. This bug is going to be fixed soon.
-Last changes on 20.02.2018 by AlTrAugsburg
+Last changes on 27.02.2018 by AlTrAugsburg
