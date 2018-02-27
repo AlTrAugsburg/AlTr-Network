@@ -188,7 +188,7 @@
               <!-- Benutzernamen Feld -->
               <div class="field">
                 <div class="control">
-                  <input class="input is-large" type="text" name="ben" id="ben" placeholder="Your Username (min. 3 chars)" pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{2,12}$" maxlength="12"  autofocus="" required>
+                  <input class="input is-large" type="text" name="ben" id="ben" placeholder="Your Username (min. 3 chars)" pattern="^[a-zA-Z][a-zA-Z0-9-_]{2,12}$" maxlength="12"  autofocus="" required>
                 </div>
               </div>
               <!-- Passwort Feld -->
