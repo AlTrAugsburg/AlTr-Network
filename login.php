@@ -231,7 +231,7 @@
           </div>
           <p class="has-text-grey">
             <a href="signup.php">Sign Up</a> &nbsp;·&nbsp;
-            <a href="../">Forgot Password</a> &nbsp;·&nbsp;
+            <a href="forgotpassword.php">Forgot Password</a> &nbsp;·&nbsp;
             <a href="../">Need Help?</a>
           </p>
         </div>
