@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="has-navbar-fixed-bottom">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,6 +15,20 @@
   <link rel="stylesheet" type="text/css" href="../css/inbox.css">
 </head>
 <body>
+  <div class="navbar is-info is-fixed-bottom is-hidden-tablet">
+    <center>
+    <a class="navbar-itemp">
+      <img src="assets/inboxa.png" height="50" width="50">
+    </a>
+    <img src="assets/leer.png" height="50" width="50">
+    <a class="nacbar-item" href="">
+      <img src="assets/settings.png" height="50" width="50">
+    </a>
+    <img src="assets/leer.png" height="50" width="50">
+    <a class="nacbar-item" style="text-align: right;" href="logout.php">
+      <img src="assets/logout.png" height="50" width="50">
+    </a></center>
+  </div>
   <?php
     session_start();
     //Überprüfen ob angemeldet
@@ -40,16 +54,20 @@
       $titlesend = $_POST["titlew"];
       $res = mysqli_query($con, "SELECT login.ben FROM login WHERE BINARY login.ben LIKE '%". $receveiversend ."'");
       if(empty($res)){
-        die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
+
+        echo "<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message=". $messagesend ."&receiver=". $receveiversend ."&title=". rawurlencode($titlesend) ."\";</script>";
+        die ();
       }
       if(mysqli_num_rows($res)==0){
-        die ("<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
+
+        echo "<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message=". $messagesend ."&receiver=". $receveiversend ."&title=". rawurlencode($titlesend) ."\";</script>";
+        die ();
       }
       while ($dsatz = mysqli_fetch_assoc($res)) {
         echo $dsatz;
       }
       $num = mysqli_num_rows($res);
-      if($num > 1) die ("<script>window.location.href = \"inboxn.php?receivererror&message="+$messagesend+"&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
+      if($num > 1) die ("<script>window.location.href = \"inboxn.php?receivererror&message=". $messagesend ."&receiver=". rawurlencode($receveiversend) ."&title=". rawurlencode($titlesend) ."\";</script>");
 
       $datesend = date("d").".".date("m").".".date("Y");
       //Nächste ID herausfinden
@@ -97,6 +115,9 @@
       if(empty($resID)){
         die ("<script>window.location.href = \"inboxn.php?messagenexsist=". $position ."-". $ben ."&site=". $_GET["site"] ."\";</script>");
       }
+      if(mysqli_num_rows($resID)==0){
+        die ("<script>window.location.href = \"inboxn.php?messagenexsist=". $position ."-". $ben ."&site=". $_GET["site"] ."\";</script>");
+      }
       //Eintrag holen
       while ($dsatz = mysqli_fetch_assoc($resID)) {
         $ID = $dsatz["ID"];
@@ -118,28 +139,29 @@
       }
     }
   ?>
-  <div class="navbar is-info">
+  <div class="navbar is-info is-hoverable">
     <div class="container">
       <div class="navbar-brand">
-        <a class="navbar-item" href="inboxn.php">
+        <a class="navbar-item" href="inbox.php">
           <img src="assets/logow.png">
         </a>
       </div>
-      <div class="navbar-end">
+      <div class="navbar-end is-hidden-mobile">
         <div class="navbar-item has-dropdown is-hoverable is-info">
           <a class="navbar-link">
             Account
           </a>
 
           <div class="navbar-dropdown is-info">
-            <a class="navbar-item">
-              Dashboard
+            <div class="navbar-item">
+              <?php echo "Hello&nbsp;<strong>". $_SESSION["altrnet"] ."</strong>" ?>
+            </div>
+            <hr class="navbar-divider">
+            <a class="navbar-item is-active">
+              Inbox
             </a>
-            <a class="navbar-item">
-              Profile
-            </a>
-            <a class="navbar-item">
-              Settings
+            <a class="navbar-item" href="">
+              Account&nbsp;Settings
             </a>
             <hr class="navbar-divider">
             <a class="navbar-item" href="logout.php">
@@ -423,9 +445,9 @@
                 <div class=\"box\">
                   <form action=\"?send\" method=\"post\">
                       <div class=\"content\"><h3>Message</h3></div>
-                      <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" name=\"receiverw\" id=\"receiverw\" value=\"". rawurldecode($_GET["receiver"]) ."\">
-                      <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\" value=\"". rawurldecode($_GET["title"]) ."\">
-                      <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder= \"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\" value=\"". rawurldecode($_GET["message"]) ."\"></textarea>
+                      <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" pattern=\"^[a-zA-Z][a-zA-Z0-9-_]{2,12}$\" name=\"receiverw\" id=\"receiverw\" maxlength=\"12\" value=\"". rawurldecode($_GET["receiver"]) ."\">
+                      <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\" maxlength=\"100\" value=\"". rawurldecode($_GET["title"]) ."\">
+                      <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder= \"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\" maxlength=\"1000\" value=\"". rawurldecode($_GET["message"]) ."\">". rawurldecode($_GET["message"]) ."</textarea>
                       <br><button class=\"button is-block is-info\" type = \"submit\" onclick=\"return checkInput()\">Submit</button>
                   </form>
                 </div>
@@ -436,9 +458,9 @@
                   <div class=\"box\">
                     <form action=\"?send\" method=\"post\">
                         <div class=\"content\"><h3>Message</h3></div>
-                        <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" name=\"receiverw\" id=\"receiverw\">
-                        <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\">
-                        <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder=\"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\"></textarea>
+                        <strong>Receiver:</strong><input class=\"input\" type=\"text\" placeholder=\"Receiver of message\" pattern=\"^[a-zA-Z][a-zA-Z0-9-_]{2,12}$\" name=\"receiverw\" id=\"receiverw\" max=\"12\" maxlength=\"12\">
+                        <br><strong>Title:</strong><input class=\"input\" type=\"text\" placeholder=\"Message title\" name=\"titlew\" id=\"titlew\" max=\"100\" maxlength=\"100\">
+                        <br><strong>Text:</strong><textarea class=\"textarea\" type=\"text\" placeholder=\"Your message\" rows=\"5\" name=\"messagew\" id=\"messagew\" max=\"1000\" maxlength=\"1000\"></textarea>
                         <br><button class=\"button is-block is-info\" type = \"submit\" onclick=\"return checkInput()\">Submit</button>
                     </form>
                   </div>
