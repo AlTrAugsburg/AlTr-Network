@@ -13,6 +13,7 @@ Features:
   -Scrolls to opened message or writebox(easier to use on smartphone)
   -Delete messages
   -Forgot password(Link will be send by E-Mail)(NEW)
+  -Mobile navbar(NEW)
   
 Upcoming features:
   -Account panel
@@ -28,4 +29,4 @@ Wanna help? Write me an E-mail: albertalberr@gmail.com
 CSS Framework Bulma used. More infos: http://bulma.io
 Important: inbox.php is the old version of inboxn.php
 Messages can't be read, if there is an code error in one message. This bug is going to be fixed soon.
-Last changes on 03.03.2018 by AlTrAugsburg
+Last changes on 17.03.2018 by AlTrAugsburg
