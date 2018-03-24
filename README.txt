@@ -12,11 +12,11 @@ Features:
   -Sign Up(with activation link send to given E-Mailaddress)
   -Scrolls to opened message or writebox(easier to use on smartphone)
   -Delete messages
-  -Forgot password(Link will be send by E-Mail)(NEW)
-  -Mobile navbar(NEW)
+  -Forgot password(Link will be send by E-Mail)
+  -Mobile navbar
+  -Account panel/settings(NEW)(There are maybe errors/bugs)
   
 Upcoming features:
-  -Account panel
   -Delete account
   -Installation assistant
   -Control panel
