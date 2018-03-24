@@ -21,7 +21,7 @@
       <img src="assets/inboxa.png" height="50" width="50">
     </a>
     <img src="assets/leer.png" height="50" width="50">
-    <a class="nacbar-item" href="">
+    <a class="nacbar-item" href="account.php">
       <img src="assets/settings.png" height="50" width="50">
     </a>
     <img src="assets/leer.png" height="50" width="50">
@@ -54,12 +54,10 @@
       $titlesend = $_POST["titlew"];
       $res = mysqli_query($con, "SELECT login.ben FROM login WHERE BINARY login.ben LIKE '%". $receveiversend ."'");
       if(empty($res)){
-
         echo "<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message=". $messagesend ."&receiver=". $receveiversend ."&title=". rawurlencode($titlesend) ."\";</script>";
         die ();
       }
       if(mysqli_num_rows($res)==0){
-
         echo "<script>window.location.href = \"inboxn.php?receivernexsist=". $receveiversend ."&message=". $messagesend ."&receiver=". $receveiversend ."&title=". rawurlencode($titlesend) ."\";</script>";
         die ();
       }
@@ -160,7 +158,7 @@
             <a class="navbar-item is-active">
               Inbox
             </a>
-            <a class="navbar-item" href="">
+            <a class="navbar-item" href="account.php">
               Account&nbsp;Settings
             </a>
             <hr class="navbar-divider">
