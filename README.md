@@ -3,7 +3,7 @@
 A web app for communication over Database with MySQL.
 A PHP and JavaScript project by AlTrAugsburg.
 
-## ***BIG UPDATE COMING SOON!***
+## ***BIG UPDATE COMING SOON!😃***
 
 ## Features:  
   * Writing
