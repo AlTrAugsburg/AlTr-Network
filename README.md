@@ -29,4 +29,4 @@ CSS Framework Bulma used. More infos: http://bulma.io
 Important: inbox.php is the old version of inboxn.php
 Messages can't be read, if there is an code error in one message. This bug is going to be fixed soon.
 Licensed under MIT License
-Last changes on 24.03.2018 by AlTrAugsburg
+Last changes on 24.03.2018 by AlTrAugsburg 
