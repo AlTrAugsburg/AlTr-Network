@@ -5,6 +5,8 @@ A PHP and JavaScript project by AlTrAugsburg.
 
 ## ***BIG UPDATE COMING SOON!😃***
 
+## Sneak Homepage under http://altr.hol.es/ap
+
 ## Features:  
   * Writing
   * Login
